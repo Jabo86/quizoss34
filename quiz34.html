@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 26</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 26</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (751-780) con opzioni riordinate casualmente
+        const questions = [
+            {
+                question: "Cos’è l’artrite reumatoide?",
+                options: ["Un accumulo di liquido nei polmoni", "Una malattia autoimmune delle articolazioni", "Un’infiammazione della vescica"],
+                correct: "Una malattia autoimmune delle articolazioni",
+                explanation: "L’artrite reumatoide (AR) è una patologia autoimmune cronica caratterizzata da infiammazione simmetrica delle articolazioni, in particolare delle mani, polsi e piedi. È causata da un attacco del sistema immunitario contro la sinovia articolare, portando a dolore, gonfiore, rigidità mattutina prolungata (>1 ora) e, nel tempo, possibili deformità articolari. Non è correlata a un accumulo di liquido nei polmoni (edema polmonare) né a un’infiammazione della vescica (cistite). Gli Operatori Socio-Sanitari (OSS) devono monitorare i sintomi, assistere il paziente nella mobilità, applicare terapie locali come impacchi caldi se prescritte, e segnalare all’infermiere eventuali peggioramenti, come febbre o deformità articolari."
+            },
+            {
+                question: "Quale è un segno tipico dell’artrite reumatoide?",
+                options: ["Poliuria", "Ittero", "Rigidità mattutina"],
+                correct: "Rigidità mattutina",
+                explanation: "La rigidità mattutina è un segno caratteristico dell’artrite reumatoide, con durata superiore a un’ora, accompagnata da dolore e gonfiore articolare simmetrico. Questo sintomo è dovuto all’infiammazione della sinovia e si distingue dalla rigidità dell’artrosi, che è più breve. La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati all’AR. Gli OSS devono osservare la mobilità del paziente al mattino, registrare la durata della rigidità, promuovere esercizi leggeri se indicati, e segnalare eventuali segni di infiammazione sistemica, come febbre o stanchezza."
+            },
+            {
+                question: "Cos’è l’artrosi?",
+                options: ["Un’infiammazione del fegato", "Un blocco renale", "Una malattia degenerativa delle articolazioni"],
+                correct: "Una malattia degenerativa delle articolazioni",
+                explanation: "L’artrosi è una patologia degenerativa cronica delle articolazioni, caratterizzata dall’usura della cartilagine articolare e da alterazioni dell’osso subcondrale. Colpisce principalmente le articolazioni portanti (ginocchia, anche, colonna vertebrale) e causa dolore, limitazione dei movimenti e crepitii articolari. Non è un’infiammazione del fegato (epatite) né un blocco renale (ostruzione urinaria). Gli OSS devono supportare il paziente nella mobilità, fornire ausili come bastoni o deambulatori se necessari, mantenere un ambiente sicuro per prevenire cadute, e segnalare all’infermiere sintomi come dolore persistente o gonfiore."
+            },
+            {
+                question: "Quale è un segno tipico dell’artrosi?",
+                options: ["Dolore articolare da carico", "Oliguria", "Ittero"],
+                correct: "Dolore articolare da carico",
+                explanation: "Il dolore articolare da carico, che peggiora con il movimento o il peso (es. camminare o stare in piedi) e migliora a riposo, è un segno tipico dell’artrosi. È accompagnato da crepitii articolari e limitazione funzionale, senza l’infiammazione sistemica tipica dell’artrite reumatoide. L’oliguria (ridotta produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono monitorare il dolore durante le attività, promuovere esercizi di rinforzo muscolare se prescritti, garantire il corretto utilizzo di ausili, e segnalare segni di infiammazione o deformità articolare."
+            },
+            {
+                question: "Cos’è la gotta?",
+                options: ["Un’artrite da accumulo di acido urico", "Un accumulo di liquido nei polmoni", "Un’infiammazione della vescica"],
+                correct: "Un’artrite da accumulo di acido urico",
+                explanation: "La gotta è una forma di artrite infiammatoria causata dall’accumulo di cristalli di acido urico (urato monosodico) nelle articolazioni, dovuta a iperuricemia. Colpisce principalmente l’alluce (podagra), ma può interessare altre articolazioni, causando attacchi acuti di dolore, gonfiore e arrossamento. Non è un accumulo di liquido nei polmoni (edema polmonare) né un’infiammazione della vescica (cistite). Gli OSS devono monitorare i sintomi, garantire una dieta a basso contenuto di purine (es. evitare carne rossa), applicare impacchi freddi se prescritti, e segnalare segni di febbre o coinvolgimento articolare multiplo."
+            },
+            {
+                question: "Quale è un segno tipico della gotta?",
+                options: ["Ittero", "Dolore acuto all’alluce", "Poliuria"],
+                correct: "Dolore acuto all’alluce",
+                explanation: "Il dolore acuto all’alluce, spesso notturno, con arrossamento, gonfiore e calore locale (podagra), è un segno tipico della gotta. Gli attacchi possono essere scatenati da dieta ricca di purine, alcol o stress. La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare l’articolazione colpita, evitare pressioni sull’area dolorante, garantire il riposo, e segnalare all’infermiere sintomi sistemici come febbre o segni di infezione."
+            },
+            {
+                question: "Cos’è il lupus eritematoso sistemico?",
+                options: ["Un blocco renale", "Una malattia autoimmune sistemica", "Un’infiammazione del fegato"],
+                correct: "Una malattia autoimmune sistemica",
+                explanation: "Il lupus eritematoso sistemico (LES) è una malattia autoimmune cronica che può colpire più organi e sistemi, inclusi pelle, articolazioni, reni e cuore. È caratterizzata da produzione di autoanticorpi che causano infiammazione e danno tissutale, con sintomi come eritema a farfalla sul viso, artralgie, fotosensibilità e stanchezza. Non è un blocco renale (ostruzione urinaria) né un’infiammazione del fegato (epatite). Gli OSS devono monitorare la cute per segni di lesioni, proteggere il paziente dalla luce solare, garantire l’assunzione di farmaci, e segnalare sintomi come febbre o edema."
+            },
+            {
+                question: "Quale è un segno tipico del lupus eritematoso sistemico?",
+                options: ["Oliguria", "Eritema a farfalla", "Ittero"],
+                correct: "Eritema a farfalla",
+                explanation: "L’eritema a farfalla, un rash cutaneo rosso a forma di farfalla sul naso e sulle guance, è un segno caratteristico del lupus eritematoso sistemico, spesso aggravato dall’esposizione al sole. È accompagnato da fotosensibilità e può essere associato ad artralgie o stanchezza. L’oliguria (ridotta produzione di urina) può essere una complicanza renale del LES, ma non è tipica, mentre l’ittero (colorazione giallastra) non è correlato. Gli OSS devono applicare creme solari se prescritte, monitorare la cute, e segnalare nuovi rash o sintomi sistemici come febbre."
+            },
+            {
+                question: "Cos’è la spondilite anchilosante?",
+                options: ["Un accumulo di liquido nei polmoni", "Un’infiammazione della vescica", "Un’artrite cronica della colonna vertebrale"],
+                correct: "Un’artrite cronica della colonna vertebrale",
+                explanation: "La spondilite anchilosante è una malattia infiammatoria cronica appartenente alle spondiloartriti, che colpisce principalmente la colonna vertebrale e le articolazioni sacroiliache. È caratterizzata da infiammazione che porta a dolore lombare, rigidità e, nei casi avanzati, fusione delle vertebre (anchilosi). Non è un accumulo di liquido nei polmoni (edema polmonare) né un’infiammazione della vescica (cistite). Gli OSS devono monitorare la postura, promuovere esercizi di stretching se prescritti, garantire il comfort durante il riposo, e segnalare sintomi come dolore notturno persistente o limitazione funzionale."
+            },
+            {
+                question: "Quale è un segno tipico della spondilite anchilosante?",
+                options: ["Dolore lombare notturno", "Poliuria", "Ittero"],
+                correct: "Dolore lombare notturno",
+                explanation: "Il dolore lombare notturno, che migliora con il movimento e peggiora a riposo, è un segno tipico della spondilite anchilosante. È spesso accompagnato da rigidità mattutina e può irradiarsi ai glutei. La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare la mobilità del paziente, favorire posture corrette, evitare posizioni prolungate, e segnalare all’infermiere segni di infiammazione sistemica o limitazione funzionale significativa."
+            },
+            {
+                question: "Cos’è la fibromialgia?",
+                options: ["Un disturbo con dolore muscoloscheletrico diffuso", "Un blocco renale", "Un’infiammazione del fegato"],
+                correct: "Un disturbo con dolore muscoloscheletrico diffuso",
+                explanation: "La fibromialgia è una condizione cronica caratterizzata da dolore muscoloscheletrico diffuso, stanchezza, punti dolorosi specifici (tender points) e disturbi del sonno. Non ha una chiara origine infiammatoria o autoimmune e può essere associata a stress psicologico o traumi. Non è un blocco renale (ostruzione urinaria) né un’infiammazione del fegato (epatite). Gli OSS devono monitorare il livello di dolore e benessere psicologico del paziente, promuovere tecniche di rilassamento come la respirazione profonda, garantire un ambiente di riposo adeguato, e segnalare sintomi come depressione o insonnia."
+            },
+            {
+                question: "Quale è un segno tipico della fibromialgia?",
+                options: ["Oliguria", "Punti trigger dolorosi", "Ittero"],
+                correct: "Punti trigger dolorosi",
+                explanation: "I punti trigger dolorosi (tender points), localizzati in aree specifiche come collo, spalle e fianchi, sono un segno caratteristico della fibromialgia. Il dolore è spesso accompagnato da stanchezza cronica, rigidità e disturbi del sonno. L’oliguria (ridotta produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare le reazioni al dolore durante le attività, evitare pressioni sui punti sensibili, promuovere esercizi leggeri come lo yoga se prescritti, e segnalare all’infermiere segni di ansia o depressione."
+            },
+            {
+                question: "Cos’è l’osteoporosi?",
+                options: ["Un accumulo di liquido nei polmoni", "Una riduzione della densità ossea", "Un’infiammazione della vescica"],
+                correct: "Una riduzione della densità ossea",
+                explanation: "L’osteoporosi è una malattia metabolica caratterizzata da una riduzione della densità minerale ossea e da un’alterazione della microarchitettura ossea, che aumenta il rischio di fratture, specialmente a livello di vertebre, femore e polso. È più comune nelle donne in post-menopausa e negli anziani, ed è spesso asintomatica fino alla comparsa di fratture. Non è un accumulo di liquido nei polmoni (edema polmonare) né un’infiammazione della vescica (cistite). Gli OSS devono implementare misure di prevenzione delle cadute (es. rimuovere ostacoli), garantire un’adeguata assunzione di calcio e vitamina D, e segnalare sintomi come dolore improvviso o deformità."
+            },
+            {
+                question: "Quale è un segno tipico dell’osteoporosi?",
+                options: ["Poliuria", "Fratture da stress", "Ittero"],
+                correct: "Fratture da stress",
+                explanation: "Le fratture da stress, come quelle vertebrali o del femore, sono un segno tipico dell’osteoporosi, spesso accompagnate da cifosi (gobba dorsale) o dolore localizzato. Queste fratture possono verificarsi con traumi minimi o spontaneamente a causa della fragilità ossea. La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono monitorare la postura e il dolore, utilizzare ausili come deambulatori per prevenire cadute, e segnalare all’infermiere segni di fratture, come dolore acuto o limitazione funzionale."
+            },
+            {
+                question: "Cos’è la scoliosi?",
+                options: ["Una deviazione laterale della colonna vertebrale", "Un’infiammazione del fegato", "Un blocco renale"],
+                correct: "Una deviazione laterale della colonna vertebrale",
+                explanation: "La scoliosi è una deformità tridimensionale della colonna vertebrale caratterizzata da una deviazione laterale e rotazione delle vertebre, spesso idiopatica (senza causa nota) e più comune negli adolescenti. Può essere asintomatica o causare asimmetria delle spalle, dolore e, nei casi gravi, compromissione respiratoria. Non è un’infiammazione del fegato (epatite) né un blocco renale (ostruzione urinaria). Gli OSS devono monitorare la postura del paziente, garantire l’uso corretto di corsetti ortopedici se prescritti, promuovere esercizi di rinforzo muscolare, e segnalare sintomi come dolore o progressione della curvatura."
+            },
+            {
+                question: "Quale è un segno tipico della scoliosi?",
+                options: ["Ittero", "Asimmetria delle spalle", "Oliguria"],
+                correct: "Asimmetria delle spalle",
+                explanation: "L’asimmetria delle spalle, con una spalla più alta dell’altra o una scapola prominente, è un segno tipico della scoliosi, spesso visibile durante l’esame fisico (test di Adams). Può essere accompagnata da disallineamento dei fianchi o curvatura visibile della colonna. L’oliguria (ridotta produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare la colonna vertebrale durante l’igiene personale, garantire il corretto posizionamento del paziente, e segnalare all’infermiere eventuali segni di dolore o progressione della deformità."
+            },
+            {
+                question: "Cos’è la miosite?",
+                options: ["Un accumulo di liquido nei polmoni", "Un’infiammazione dei muscoli scheletrici", "Un’infiammazione della vescica"],
+                correct: "Un’infiammazione dei muscoli scheletrici",
+                explanation: "La miosite è un gruppo di patologie infiammatorie, spesso autoimmuni (es. polimiosite, dermatomiosite), che colpiscono i muscoli scheletrici, causando debolezza muscolare, dolore e, in alcuni casi, rash cutanei. Può essere associata a malattie sistemiche come il lupus o a infezioni. Non è un accumulo di liquido nei polmoni (edema polmonare) né un’infiammazione della vescica (cistite). Gli OSS devono monitorare la forza muscolare durante le attività, evitare movimenti che possano affaticare i muscoli, garantire l’assunzione di farmaci, e segnalare sintomi come difficoltà motorie o rash."
+            },
+            {
+                question: "Quale è un segno tipico della miosite?",
+                options: ["Poliuria", "Debolezza muscolare prossimale", "Ittero"],
+                correct: "Debolezza muscolare prossimale",
+                explanation: "La debolezza muscolare prossimale, che colpisce i muscoli delle spalle e delle cosce, è un segno tipico della miosite, rendendo difficili attività come alzarsi da una sedia o sollevare le braccia. Può essere accompagnata da dolore muscolare o rash (nella dermatomiosite). La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono assistere il paziente nelle attività quotidiane, monitorare il dolore e la mobilità, e segnalare all’infermiere segni di peggioramento, come difficoltà respiratorie o rash cutanei."
+            },
+            {
+                question: "Cos’è la polimialgia reumatica?",
+                options: ["Un blocco renale", "Un disturbo infiammatorio con dolore muscolare", "Un’infiammazione del fegato"],
+                correct: "Un disturbo infiammatorio con dolore muscolare",
+                explanation: "La polimialgia reumatica (PMR) è una condizione infiammatoria cronica che colpisce prevalentemente gli adulti sopra i 50 anni, caratterizzata da dolore e rigidità muscolare bilaterale, soprattutto a spalle, collo e fianchi. È spesso associata all’arterite a cellule giganti e risponde bene ai corticosteroidi. Non è un blocco renale (ostruzione urinaria) né un’infiammazione del fegato (epatite). Gli OSS devono monitorare la mobilità e il dolore, applicare impacchi caldi se prescritti, garantire l’assunzione di farmaci, e segnalare sintomi come febbre o cefalea improvvisa."
+            },
+            {
+                question: "Quale è un segno tipico della polimialgia reumatica?",
+                options: ["Oliguria", "Rigidità delle spalle", "Ittero"],
+                correct: "Rigidità delle spalle",
+                explanation: "La rigidità delle spalle, spesso bilaterale e più intensa al mattino, è un segno caratteristico della polimialgia reumatica, accompagnata da dolore muscolare e limitazione funzionale. Può essere associata a stanchezza e lieve febbre. L’oliguria (ridotta produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare la capacità del paziente di svolgere movimenti, promuovere esercizi leggeri se indicati, evitare posizioni prolungate, e segnalare all’infermiere segni di infiammazione sistemica o sintomi neurologici."
+            },
+            {
+                question: "Cos’è la sindrome di Sjögren?",
+                options: ["Una malattia autoimmune con secchezza", "Un accumulo di liquido nei polmoni", "Un’infiammazione della vescica"],
+                correct: "Una malattia autoimmune con secchezza",
+                explanation: "La sindrome di Sjögren è una malattia autoimmune cronica che colpisce principalmente le ghiandole esocrine, causando secchezza degli occhi (xeroftalmia) e della bocca (xerostomia). Può essere primaria o secondaria (associata a lupus o artrite reumatoide) e presenta sintomi come artralgie, stanchezza e rischio di infezioni. Non è un accumulo di liquido nei polmoni (edema polmonare) né un’infiammazione della vescica (cistite). Gli OSS devono garantire l’idratazione, somministrare lacrime artificiali o collutori se prescritti, monitorare la cute e le mucose, e segnalare segni di infezioni o dolore articolare."
+            },
+            {
+                question: "Quale è un segno tipico della sindrome di Sjögren?",
+                options: ["Ittero", "Secchezza oculare", "Poliuria"],
+                correct: "Secchezza oculare",
+                explanation: "La secchezza oculare (xeroftalmia), con sensazione di sabbia negli occhi e bruciore, è un segno tipico della sindrome di Sjögren, dovuta alla ridotta produzione di lacrime. È spesso accompagnata da xerostomia (bocca secca) e può aumentare il rischio di infezioni oculari. La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono somministrare lacrime artificiali, garantire un’adeguata idratazione orale, monitorare segni di infezioni oculari o orali, e segnalare all’infermiere sintomi come dolore o arrossamento."
+            },
+            {
+                question: "Cos’è l’osteomielite?",
+                options: ["Un’infezione dell’osso", "Un blocco renale", "Un’infiammazione del fegato"],
+                correct: "Un’infezione dell’osso",
+                explanation: "L’osteomielite è un’infezione acuta o cronica dell’osso, solitamente causata da batteri (es. Staphylococcus aureus), che può derivare da traumi, interventi chirurgici o diffusione ematogena. Provoca dolore localizzato, gonfiore, arrossamento e febbre, e può portare a complicanze come ascessi o fistole. Non è un blocco renale (ostruzione urinaria) né un’infiammazione del fegato (epatite). Gli OSS devono monitorare la temperatura corporea, garantire l’assunzione di antibiotici, mantenere il sito infetto pulito, e segnalare sintomi come secrezioni o febbre persistente."
+            },
+            {
+                question: "Quale è un segno tipico dell’osteomielite?",
+                options: ["Oliguria", "Ittero", "Dolore osseo localizzato"],
+                correct: "Dolore osseo localizzato",
+                explanation: "Il dolore osseo localizzato, spesso intenso e associato ad arrossamento, gonfiore e calore nella zona colpita, è un segno tipico dell’osteomielite. Può essere accompagnato da febbre e limitazione funzionale. L’oliguria (ridotta produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare il sito infetto per segni di secrezioni o ulcerazioni, garantire il riposo dell’arto colpito, evitare pressioni sulla zona, e segnalare all’infermiere sintomi come febbre alta o peggioramento del dolore."
+            },
+            {
+                question: "Cos’è la tendinite?",
+                options: ["Un accumulo di liquido nei polmoni", "Un’infiammazione dei tendini", "Un’infiammazione della vescica"],
+                correct: "Un’infiammazione dei tendini",
+                explanation: "La tendinite è un’infiammazione dei tendini, spesso causata da sovraccarico funzionale, microtraumi ripetuti o postura scorretta. Colpisce comunemente tendini come quello di Achille o del gomito (epicondilite) e provoca dolore, gonfiore e limitazione dei movimenti. Non è un accumulo di liquido nei polmoni (edema polmonare) né un’infiammazione della vescica (cistite). Gli OSS devono monitorare il dolore durante il movimento, applicare impacchi freddi se prescritti, garantire il riposo del tendine colpito, e segnalare segni di infiammazione persistente o febbre."
+            },
+            {
+                question: "Quale è un segno tipico della tendinite?",
+                options: ["Poliuria", "Dolore al movimento", "Ittero"],
+                correct: "Dolore al movimento",
+                explanation: "Il dolore al movimento, spesso localizzato e aggravato dall’uso del tendine colpito, è un segno tipico della tendinite. Può essere accompagnato da gonfiore, calore locale e crepitii. La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare la funzionalità del tendine, evitare movimenti che possano peggiorare il dolore, promuovere il riposo, e segnalare all’infermiere segni di infiammazione cronica o limitazione funzionale significativa."
+            },
+            {
+                question: "Cos’è la borsite?",
+                options: ["Un’infiammazione della borsa sinoviale", "Un blocco renale", "Un’infiammazione del fegato"],
+                correct: "Un’infiammazione della borsa sinoviale",
+                explanation: "La borsite è un’infiammazione della borsa sinoviale, una sacca piena di liquido che riduce l’attrito tra tendini, muscoli e ossa. È spesso causata da traumi ripetuti, infezioni o malattie reumatiche, e colpisce comunemente spalla, gomito o ginocchio, causando dolore e gonfiore. Non è un blocco renale (ostruzione urinaria) né un’infiammazione del fegato (epatite). Gli OSS devono monitorare il gonfiore e il dolore, applicare impacchi freddi se prescritti, evitare pressioni sulla borsa infiammata, e segnalare sintomi come febbre o arrossamento."
+            },
+            {
+                question: "Quale è un segno tipico della borsite?",
+                options: ["Oliguria", "Gonfiore locale", "Ittero"],
+                correct: "Gonfiore locale",
+                explanation: "Il gonfiore locale, accompagnato da dolore al movimento e calore nella zona colpita, è un segno tipico della borsite. Può limitare la funzionalità dell’articolazione coinvolta e, in caso di infezione, essere associato a febbre. L’oliguria (ridotta produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare il sito per segni di infiammazione, garantire il riposo dell’articolazione, evitare movimenti ripetitivi, e segnalare all’infermiere sintomi come secrezioni o febbre."
+            },
+            {
+                question: "Cos’è la sindrome del tunnel carpale?",
+                options: ["Un accumulo di liquido nei polmoni", "Una compressione del nervo mediano", "Un’infiammazione della vescica"],
+                correct: "Una compressione del nervo mediano",
+                explanation: "La sindrome del tunnel carpale è una neuropatia periferica causata dalla compressione del nervo mediano nel canale carpale del polso, spesso dovuta a movimenti ripetitivi, traumi o condizioni come l’artrite reumatoide. Provoca parestesie, dolore e debolezza alla mano, specialmente alle prime tre dita. Non è un accumulo di liquido nei polmoni (edema polmonare) né un’infiammazione della vescica (cistite). Gli OSS devono monitorare la sensibilità e la forza della mano, garantire l’uso di tutori notturni se prescritti, e segnalare sintomi come atrofia muscolare o dolore persistente."
+            },
+            {
+                question: "Quale è un segno tipico della sindrome del tunnel carpale?",
+                options: ["Parestesie notturne", "Ittero", "Poliuria"],
+                correct: "Parestesie notturne",
+                explanation: "Le parestesie notturne, con formicolio e intorpidimento delle prime tre dita della mano, sono un segno tipico della sindrome del tunnel carpale, spesso aggravate dalla flessione del polso durante il sonno. Possono essere accompagnate da dolore e debolezza. La poliuria (aumento della produzione di urina) e l’ittero (colorazione giallastra della pelle) non sono correlati. Gli OSS devono osservare la funzionalità della mano, garantire il corretto utilizzo di tutori, promuovere esercizi di stretching se indicati, e segnalare all’infermiere segni di peggioramento, come perdita di forza o dolore irradiato."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
